@@ -1,0 +1,46 @@
+variable "gcp_project_id" {
+  type        = string
+  description = "GCP project id (eg my-sandbox-4b1d)"
+}
+
+variable "gcp_region" {
+  type        = string
+  description = "GCP region (eg europe-west2)"
+}
+
+provider "google" {
+  project               = var.gcp_project_id
+  region                = var.gcp_region
+  user_project_override = "true"
+  billing_project       = var.gcp_project_id
+}
+
+provider "google-beta" {
+  project               = var.gcp_project_id
+  region                = var.gcp_region
+  user_project_override = "true"
+  billing_project       = var.gcp_project_id
+}
+
+module "platform-network" {
+  source = "../../../modules/platform-network/gcp"
+
+  gcp_project_id = var.gcp_project_id
+  gcp_region     = var.gcp_region
+  environment    = var.environment
+
+  ip_range_k8s_control_plane = var.ip_range_k8s_control_plane
+  ip_range_k8s_nodes         = var.ip_range_k8s_nodes
+  ip_range_k8s_pods          = var.ip_range_k8s_pods
+  ip_range_k8s_services      = var.ip_range_k8s_services
+  ip_range_tenants_infra     = var.ip_range_tenants_infra
+
+  # gcp specific config
+  ip_range_private_service_access = var.ip_range_private_service_access
+}
+
+variable "ip_range_private_service_access" {
+  type        = string
+  description = "The cidr of the ip range to use for private service access"
+  default     = "172.16.0.0/16"
+}

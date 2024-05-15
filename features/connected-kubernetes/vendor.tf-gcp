@@ -1,0 +1,48 @@
+variable "gcp_project_id" {
+  type        = string
+  description = "GCP project id (eg my-sandbox-4b1d)"
+}
+
+variable "gcp_region" {
+  type        = string
+  description = "GCP region (eg europe-west2)"
+}
+
+output "project_id" {
+  description = "project id where the private cluster is"
+  value       = var.gcp_project_id
+}
+
+provider "google" {
+  project               = var.gcp_project_id
+  region                = var.gcp_region
+  user_project_override = "true"
+  billing_project       = var.gcp_project_id
+}
+
+provider "google-beta" {
+  project               = var.gcp_project_id
+  region                = var.gcp_region
+  user_project_override = "true"
+  billing_project       = var.gcp_project_id
+}
+
+module "bootstrap" {
+  source = "../../../modules/bootstrap/gcp"
+
+  gcp_project_id = var.gcp_project_id
+}
+
+module "connected-kubernetes" {
+  source     = "../../../modules/connected-kubernetes/gcp"
+  depends_on = [module.bootstrap]
+
+  gcp_project_id = var.gcp_project_id
+  gcp_region     = var.gcp_region
+  cluster_name   = var.environment
+
+  ip_range_k8s_control_plane = var.ip_range_k8s_control_plane
+  ip_range_k8s_nodes         = var.ip_range_k8s_nodes
+  ip_range_k8s_pods          = var.ip_range_k8s_pods
+  ip_range_k8s_services      = var.ip_range_k8s_services
+}
