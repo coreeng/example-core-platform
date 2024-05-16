@@ -1,0 +1,49 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+# only allow one workflow at a time with the concurrency-id "actions-main" to be running
+concurrency: actions-main
+
+jobs:
+  release:
+    name: Release
+    uses: coreeng/p2p/.github/workflows/platform-release.yaml@main
+    with:
+      registry: ghcr.io
+      image_name: ${{ github.repository }}
+      image_description: "Core Platform"
+
+  matrix:
+    name: Matrix
+    needs:
+      - release
+    uses: coreeng/p2p/.github/workflows/platform-environment-matrix.yaml@main
+    with:
+      include_release: false
+
+  cd:
+    name: CD
+    needs:
+      - release
+      - matrix
+    uses: coreeng/p2p/.github/workflows/platform-cd.yaml@main
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    with:
+      environment: ${{ matrix.environment }}
+      platform: ${{ matrix.platform }}
+      release: ${{ needs.release.outputs.version }}@${{ needs.release.outputs.digest }}
+      release_build: true
+    secrets:
+      cecg-registry-username: ${{ secrets.CECG_DOCKER_USERNAME }}
+      cecg-registry-secret: ${{ secrets.CECG_DOCKER_SECRET }}

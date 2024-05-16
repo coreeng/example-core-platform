@@ -1,0 +1,33 @@
+environment: "example-azure"
+
+release: main
+
+features:
+  - platform-network
+#  - connected-kubernetes
+
+platform:
+  subscriptionId: "00000000-0000-0000-0000-000000000000"
+  resourceGroupName: "example-azure"
+  region: "UK South"
+  vendor: azure
+
+bucket:
+  resourceGroupName: "example-azure"
+  storageAccountName: "exampleazure"
+  name: "tfstate-core-platform-example-azure"
+  location: "UK South"
+
+network:
+  subnets:
+    kubernetes:
+      controlPlane: "10.0.0.0/26"
+      nodes: "10.10.0.0/20"
+      pods: "10.96.0.0/14"
+      services: "192.168.0.0/16"
+
+tenantsYaml:
+  tenantsYamlPath: tenants
+
+tests:
+  functional: true

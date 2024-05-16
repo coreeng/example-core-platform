@@ -1,0 +1,71 @@
+# Environment YAML Schema
+
+# Environment name
+environment: str()
+
+# Release to use for this environment
+release: str()
+
+# List of features enabled for this environment
+features: list(enum('platform-network', 'connected-kubernetes'))
+
+# Platform configuration
+platform: any(include("platform-aws"), include("platform-azure"), include("platform-gcp"))
+
+# Bucket configuration
+bucket: any(include("bucket-aws"), include("bucket-azure"), include("bucket-gcp"))
+
+# Network
+network:
+  subnets:
+    kubernetes:
+      controlPlane: include("cidr")
+      nodes: include("cidr")
+      pods: include("cidr")
+      services: include("cidr")
+
+# Tenants YAML configuration
+tenantsYaml:
+  tenantsYamlPath: str()
+
+# Tests configuration
+tests:
+  functional: bool()
+
+# schemas below this line will only be used if they are referenced by an `include(name)` in the above schema
+---
+# must be a valid CIDR, with prefix length /8 - /29
+cidr: str(min='1', max='18', matches='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([8-9]|[1-2][0-9]))?$')
+---
+platform-aws:
+  accountId: str()
+  region: str()
+  vendor: str()
+---
+bucket-aws:
+  accountId: str()
+  name: str()
+  location: str()
+---
+platform-azure:
+  subscriptionId: str()
+  resourceGroupName: str()
+  region: str()
+  vendor: str()
+---
+bucket-azure:
+  resourceGroupName: str()
+  storageAccountName: str()
+  name: str()
+  location: str()
+---
+platform-gcp:
+  projectId: str()
+  projectNumber: str(matches='^[0-9]+$')
+  region: str()
+  vendor: str()
+---
+bucket-gcp:
+  projectId: str()
+  name: str()
+  location: str()

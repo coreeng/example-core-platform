@@ -1,0 +1,42 @@
+variable "azure_subscription_id" {
+  type        = string
+  description = "Azure subscription id (eg 00000000-0000-0000-0000-000000000000)"
+}
+
+variable "azure_resourcegroup_name" {
+  type        = string
+  description = "Azure resource group name (eg sandbox-azure)"
+}
+
+variable "azure_region" {
+  type        = string
+  description = "Azure region (eg UK South)"
+}
+
+provider "azurerm" {
+  subscription_id = var.azure_subscription_id
+
+  features {}
+}
+
+module "bootstrap" {
+  source = "../../../modules/bootstrap/azure"
+
+  azure_subscription_id    = var.azure_subscription_id
+  azure_resourcegroup_name = var.azure_resourcegroup_name
+}
+
+module "connected-kubernetes" {
+  source     = "../../../modules/connected-kubernetes/azure"
+  depends_on = [module.bootstrap]
+
+  azure_subscription_id    = var.azure_subscription_id
+  azure_resourcegroup_name = var.azure_resourcegroup_name
+  azure_region             = var.azure_region
+  cluster_name             = var.environment
+
+  ip_range_k8s_control_plane = var.ip_range_k8s_control_plane
+  ip_range_k8s_nodes         = var.ip_range_k8s_nodes
+  ip_range_k8s_pods          = var.ip_range_k8s_pods
+  ip_range_k8s_services      = var.ip_range_k8s_services
+}

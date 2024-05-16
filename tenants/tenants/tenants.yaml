@@ -1,0 +1,9 @@
+name: tenants
+parent: root
+description: "Parent tenant for users of the core platform"
+contactEmail: tenants@example.com
+costCentre: tenants
+environments:
+  - core-platform-cloud
+  - core-platform-edge
+repos: []

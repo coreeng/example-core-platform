@@ -1,0 +1,28 @@
+# Tenant YAML schema in Yamale format
+
+# name & parent must be valid k8s namespace names
+name:   str(min='1', max='63', matches='^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
+parent: str(min='1', max='63', matches='^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
+
+# description must be a string up to 253 characters
+description: str(253)
+
+# contactEmail must be a valid email
+contactEmail: str(min='5', max='253', matches='^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$')
+
+# costCentre must be a valid k8s label value
+costCentre: str(min='1', max='63', matches='^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$')
+
+# must be valid RFC 1123 DNS label
+environments: list(include("environment"))
+
+# must be a valid URL
+repos: list(include("repo"))
+
+# schemas below this line will only be used if they are referenced by an `include(name)` in the above schema
+---
+# must be valid repo URL
+repo: str(min='1', max='253', matches='^(https?):\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&\\/\\/=]*)$')
+---
+# must be valid RFC 1123 DNS label
+environment: str(min='1', max='63', matches='^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')

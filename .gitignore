@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+.history/
+.DS_Store
+*.iml
+*.swp
+**/.helm
+**/.terraform
+**/.feature-*
+functional-tests/test

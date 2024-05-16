@@ -1,0 +1,32 @@
+environment: "example-gcp"
+
+release: main
+
+features:
+  - platform-network
+  - connected-kubernetes
+
+platform:
+  projectId: "example-gcp"
+  projectNumber: "012345678901"
+  region: "europe-west2"
+  vendor: gcp
+
+bucket:
+  projectId: "example-gcp"
+  name: "tfstate-core-platform-example-gcp"
+  location: "europe-west2"
+
+network:
+  subnets:
+    kubernetes:
+      controlPlane: "10.0.0.0/28"
+      nodes: "10.10.0.0/20"
+      pods: "10.96.0.0/14"
+      services: "192.168.0.0/16"
+
+tenantsYaml:
+  tenantsYamlPath: tenants
+
+tests:
+  functional: true

@@ -1,0 +1,38 @@
+variable "aws_account_id" {
+  type        = string
+  description = "AWS account id (eg 012345678901)"
+}
+
+variable "aws_region" {
+  type        = string
+  description = "AWS region (eg eu-west-2)"
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+output "project_id" {
+  description = "account id where the private cluster is"
+  value       = var.aws_account_id
+}
+
+module "bootstrap" {
+  source = "../../../modules/bootstrap/aws"
+
+  aws_account_id = var.aws_account_id
+}
+
+module "connected-kubernetes" {
+  source     = "../../../modules/connected-kubernetes/aws"
+  depends_on = [module.bootstrap]
+
+  aws_account_id = var.aws_account_id
+  aws_region     = var.aws_region
+  cluster_name   = var.environment
+
+  ip_range_k8s_control_plane = var.ip_range_k8s_control_plane
+  ip_range_k8s_nodes         = var.ip_range_k8s_nodes
+  ip_range_k8s_pods          = var.ip_range_k8s_pods
+  ip_range_k8s_services      = var.ip_range_k8s_services
+}

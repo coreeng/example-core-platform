@@ -1,0 +1,31 @@
+environment: "example-aws"
+
+release: main
+
+features:
+  - platform-network
+  - connected-kubernetes
+
+platform:
+  accountId: "012345678901"
+  region: "eu-west-2"
+  vendor: aws
+
+bucket:
+  accountId: "012345678901"
+  name: "tfstate-core-platform-example-aws"
+  location: "eu-west-2"
+
+network:
+  subnets:
+    kubernetes:
+      controlPlane: "10.0.0.0/26"
+      nodes: "10.10.0.0/20"
+      pods: "10.96.0.0/14"
+      services: "192.168.0.0/16"
+
+tenantsYaml:
+  tenantsYamlPath: tenants
+
+tests:
+  functional: true
